@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Author: Chen Bin <chenbin DOT sh AT GMAIL>
+# Authors:
+#   Chen Bin <chenbin DOT sh AT GMAIL>
+#   Nil Geisweiller <ngeiswei DOT sh AT GMAIL>
+#
 # URL: https://github.com/redguartoo/pycmake-flymake
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -15,6 +18,7 @@ mk_name="Makefile" #or Makefile.flymake?
 prog="cmflymk"
 
 import fnmatch,os,re,getopt,sys
+from optparse import OptionParser
 
 def guess_root_src_dir(build_dir):
     global mk_name
@@ -37,6 +41,9 @@ def create_makefile(build_dir,root_src_dir,cm,executable):
         +"include "+flag_make+"\n" \
         +".PHONY: check-syntax\ncheck-syntax:\n\t${CXX} -o /dev/null ${CXX_FLAGS} ${CXX_DEFINES} -S ${CHK_SOURCES}"
 
+    if options.verbose:
+        print mk_path
+
     f=open(mk_path,"w")
     f.write(txt)
     f.close()
@@ -47,48 +54,35 @@ def clean_makefiles():
     for root, dirnames, filenames in os.walk("."):
         for filename in fnmatch.filter(filenames, 'CMakeLists.txt'):
             matches.append(os.path.join(root, mk_name))
-    print "Deleted "+mk_name+":"
+
+    if options.verbose:
+        print "Deleted:"
+        
     for f in matches:
         f=os.path.abspath(f)
         if os.path.isfile(f):
-            print f
+            if options.verbose:
+                print f
             os.remove(f)
 
-def usage():
-    global prog
-    global mk_name
-    message="""SYNOPSIS
-       {program} [options] [build_dir]
-
-USAGE
-       {program} ~/my_project/build
-           create {mk} for flymake
-
-       {program} -c 
-           clean {mk} {program} produced recursively
-    """
-    print message.format(program=prog,mk=mk_name)
-
 if __name__=="__main__":
-    try:
-        opts,args=getopt.getopt(sys.argv[1:],"hc",["help","clean"])
-    except getopt.GetoptError, err:
-        usage()
-        sys.exit(2)
-    
-    for o, a in opts:
-        if o in ("-c", "--clean"):
-            clean_makefiles()
-            sys.exit()
-        elif o in ("-h","--help"):
-            usage()
-            sys.exit()
-        else:
-            assert False, "unhandled option"
+    # define options
+    usage = "usage: %prog [build_dir] [options]"
+    parser = OptionParser(usage)
+    parser.add_option("-c", "--clean", action = "store_true", default = False,
+                      help = "clean {mk} {program} produced recursively".format(program=prog,mk=mk_name))
+    parser.add_option("-v", "--verbose", action = "store_true", default = False,
+                      help = "show created/cleaned files")
 
-    if len(args)==0:
-        usage()
+    #parse options
+    (options, args) = parser.parse_args()
+
+    if options.clean:
+        clean_makefiles()
         sys.exit()
+        
+    if len(args) != 1:
+        parser.error("incorrect number of arguments. Use --help to get more information")
 
     build_dir=os.path.abspath(args[0])
     root_src_dir=guess_root_src_dir(build_dir)
@@ -101,6 +95,8 @@ if __name__=="__main__":
             matches.append(os.path.join(root, filename))
     
     #each cmake file
+    if options.verbose:
+        print "Created:"
     for cm in matches:
         for l in open(cm,'r').readlines():
             m=p.match(l)
