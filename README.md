@@ -9,7 +9,7 @@ Dependencies
 These scripts require a few obvious dependencies.
 
 * [Emacs 23](http://www.gnu.org/software/emacs/), which includes Flymake (this is not necessary to run the script, but to use the results)
-* [Python](http://www.python.org/software/bash/), I tested it with python 2.7 but I think 2.2 will be fine.
+* [Python](http://www.python.org/software/bash/), I tested it with python 2.7 but I think 2.3 will be fine.
 * [CMake](http://www.cmake.org/), I tested it with cmake 2.8
 
 Installation
