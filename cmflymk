@@ -107,7 +107,11 @@ def clean_makefiles(root_src_dir):
 
 if __name__=="__main__":
     # define options
-    usage = "usage: %prog [dir] [options]\nwhere 'dir' is either the build directory (when creating the makefiles) or the source directory when cleaning (option -c). If none is provided the current directory is used."
+    usage = """usage: %prog [dir] [options]
+  where 'dir' is either the build directory (when creating the makefiles)
+  or the source directory when cleaning (option -c). If none is provided
+  the current directory is used."""
+
     parser = OptionParser(usage)
     parser.add_option("-c", "--clean", action = "store_true", default = False,
                       help = "clean {mk} {program} produced recursively".format(program=prog,mk=mk_name))
