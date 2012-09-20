@@ -30,7 +30,7 @@ Usage
 Other Notes
 -----------
 
-* When you change any of your `CMakeLists.txt` files, re-run `cmake` and `cmflymk` (you may want to use option -o to overwrite the make files without being asked the permission).
+* When you change any of your `CMakeLists.txt` files, re-run `cmake` and `cmflymk` (you may want to use option -y to overwrite the make files without being asked the permission).
 * To remove the Flymake Makefiles, run `cmflymk -c`.
 * These scripts are configured to use the GNU make variables ${CXX}, ${CXX\_FLAGS}, and ${CXX\_DEFINES} in the actual Makefiles. This means that the scripts will require editing to work with pure C projects (when using CC, CFLAGS, etc.) or any other language besides C++. This should be quite easy to figure out. Look at the actual Makefiles which get generated for more information.
 * I haven't tested this on Windows because I'm only working under Linux/Cygwin. Contact me (chenbin DOT sh AT GMAIL) if you need Windows support.
