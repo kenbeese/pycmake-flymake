@@ -88,10 +88,10 @@ def create_makefile(build_dir,root_src_dir,cm,executable):
     f.write(txt)
     f.close()
 
-def clean_makefiles():
+def clean_makefiles(root_src_dir):
     global mk_name
     matches = []
-    for root, dirnames, filenames in os.walk("."):
+    for root, dirnames, filenames in os.walk(root_src_dir):
         for filename in fnmatch.filter(filenames, 'CMakeLists.txt'):
             matches.append(os.path.join(root, mk_name))
 
@@ -107,7 +107,7 @@ def clean_makefiles():
 
 if __name__=="__main__":
     # define options
-    usage = "usage: %prog [build_dir] [options]"
+    usage = "usage: %prog [dir] [options]\nwhere 'dir' is either the build directory (when creating the makefiles) or the source directory when cleaning (option -c). If none is provided the current directory is used."
     parser = OptionParser(usage)
     parser.add_option("-c", "--clean", action = "store_true", default = False,
                       help = "clean {mk} {program} produced recursively".format(program=prog,mk=mk_name))
@@ -119,14 +119,16 @@ if __name__=="__main__":
     #parse options
     (options, args) = parser.parse_args()
 
+    dir_path = "." if len(args) == 0 else args[0]
+
     if options.clean:
-        clean_makefiles()
+        clean_makefiles(dir_path)
         sys.exit()
         
-    if len(args) != 1:
+    if len(args) > 1:
         parser.error("incorrect number of arguments. Use --help to get more information")
 
-    build_dir=os.path.abspath(args[0])
+    build_dir=os.path.abspath(dir_path)
     root_src_dir=guess_root_src_dir(build_dir)
 
     p=re.compile('\s*add_executable\(\s*(\w+)', re.IGNORECASE)
