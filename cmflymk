@@ -113,7 +113,7 @@ if __name__=="__main__":
                       help = "clean {mk} {program} produced recursively".format(program=prog,mk=mk_name))
     parser.add_option("-v", "--verbose", action = "store_true", default = False,
                       help = "show created/cleaned files")
-    parser.add_option("-o", "--overwrite", action = "store_true", default = False,
+    parser.add_option("-y", "--assumeyes", action = "store_true", default = False,
                       help = "overwrite existing {} files without asking".format(mk_name))
 
     #parse options
