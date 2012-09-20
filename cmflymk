@@ -17,7 +17,7 @@
 mk_name="Makefile" #or Makefile.flymake?
 prog="cmflymk"
 
-import fnmatch,os,re,getopt,sys
+import fnmatch,os,re,sys
 from optparse import OptionParser
 
 def guess_root_src_dir(build_dir):
