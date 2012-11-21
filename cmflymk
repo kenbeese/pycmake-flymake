@@ -11,7 +11,7 @@
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
-#   
+#
 #   See http://www.gnu.org/copyleft/gpl.html for licence details.
 
 mk_name="Makefile" #or Makefile.flymake?
@@ -53,6 +53,15 @@ def query_yes_no(question, default="yes"):
             sys.stdout.write("Please respond with 'yes' or 'no' "\
                              "(or 'y' or 'n').\n")
 
+def get_var_value(var,cm):
+    for l in open(cm,'r').readlines():
+        p=re.compile('\s*set\(\s*'+var+'\s+(\w+)', re.IGNORECASE)
+        m=p.match(l)
+        if m:
+            v=m.group(1)
+            return v
+    return ""
+
 def guess_root_src_dir(build_dir):
     global mk_name
     p1=re.compile("^CMAKE_SOURCE_DIR\s*=(.+)$")
@@ -71,7 +80,7 @@ def create_makefile(build_dir,root_src_dir,cm,executable):
     flag_make=build_dir+cm_dir.replace(root_src_dir,"",1)+"/CMakeFiles/"+executable+".dir/flags.make"
     mk_path=os.path.join(cm_dir,mk_name)
 
-    if not options.overwrite:
+    if not options.assumeyes:
         if os.path.exists(mk_path):
             answer=query_yes_no("File {} already exists. Do you want to overwrite it?".format(mk_path))
             if answer=="yes":
@@ -135,7 +144,7 @@ if __name__=="__main__":
     build_dir=os.path.abspath(dir_path)
     root_src_dir=guess_root_src_dir(build_dir)
 
-    p=re.compile('\s*add_executable\(\s*(\w+)', re.IGNORECASE)
+    p=re.compile('\s*add_executable\(\s*([\$\{\}\w]+)', re.IGNORECASE)
     
     matches = []
     for root, dirnames, filenames in os.walk(root_src_dir):
@@ -149,7 +158,10 @@ if __name__=="__main__":
         for l in open(cm,'r').readlines():
             m=p.match(l)
             if m:
-                executable=m.group(1)
+                executable=m.group(0)
+                if executable[0]=='$' and executable[1]=='{':
+                    executable=get_var_value(executable[2:-1],cm)
+
                 create_makefile(build_dir,root_src_dir,cm,executable)
                 break
 
