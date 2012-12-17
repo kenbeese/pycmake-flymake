@@ -158,7 +158,7 @@ if __name__=="__main__":
         for l in open(cm,'r').readlines():
             m=p.match(l)
             if m:
-                executable=m.group(0)
+                executable=m.group(1)
                 if executable[0]=='$' and executable[1]=='{':
                     executable=get_var_value(executable[2:-1],cm)
 
